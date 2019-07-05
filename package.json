@@ -1,0 +1,43 @@
+{
+  "name": "thingycreate",
+  "version": "0.1.0",
+  "description": "Wizard to create any thingy - (Apps, Websites, Services, Machine)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Git",
+    "github",
+    "CLI",
+    "thingy",
+    "create",
+    "tool",
+    "webtech",
+    "web",
+    "app",
+    "toolset",
+    "build",
+    "system",
+    "build-system"
+  ],
+  "author": "Lenard Frommelt lenard.frommelt@gne.or.at",
+  "license": "Unlicense",
+  "bin": {
+    "thingycreate": "./index.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^16.28.2",
+    "chalk": "^2.4.2",
+    "clear": "0.0.1",
+    "clui": "^0.3.6",
+    "figlet": "^1.2.3",
+    "fs-extra": "^8.1.0",
+    "inquirer": "^5.2.0",
+    "lodash": "^4.17.11",
+    "minimist": "^1.2.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "simple-git": "^1.116.0"
+  }
+}

@@ -1,0 +1,6 @@
+{
+    "name": "thingycreate",
+    "baseTemplateURL": "https://github.com/JhonnyJason/root-template.git",
+    "defaultToolsetURL": "https://github.com/JhonnyJason/toolset.git",
+    "defaultSourceURL": "https://github.com/JhonnyJason/sample-source.git"
+}

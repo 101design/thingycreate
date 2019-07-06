@@ -134,7 +134,7 @@ Responsible for all thingy-relevant information. E.g. the specific structure of 
 
 Finally has the capability to call the relevant preparation script in the toolset. Or Fails throwing an Error, the relevant preparation script is not present.
 
-# Further step
+# Further steps
 This Wizard will be furtherly generalized and extended, mainly to fit my own needs.
 Ideas of what could come next:
 - create a thingy type for commandline tools

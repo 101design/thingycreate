@@ -137,8 +137,10 @@ Finally has the capability to call the relevant preparation script in the toolse
 # Further step
 This Wizard will be furtherly generalized and extended, mainly to fit my own needs.
 Ideas of what could come next:
+- create a thingy type for commandline tools
+- have an own default sources repository for each `thingyType` 
 - more convenient argument handling
-- restructure thingy.js for nicer ways of using various different thingy type sets 
+- restructure thingy.js for nicer ways of adding a new `thingyType` 
 - use various non-github remotes
 - create repositories on not-github systems
 

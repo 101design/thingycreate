@@ -10,16 +10,22 @@ Requirements
 Installation
 ------------
 
+Current git version
 ``` sh
 $ npm install -g git+https://github.com/JhonnyJason/thingycreate.git
 ```
-*! Currently only tested on Linux*
+Npm Registry
+``` sh
+$ npm install -g thingycreate
+```
+
 
 Usage
 -----
-First make sure you have your [ssh access-key for github](https://help.github.com/en/articles/connecting-to-github-with-ssh) usable in your shell. I personally add it using the [ssh-agent](https://www.ssh.com/ssh/agent) right before I call the wizard.
 
-*! it has not been tested with a setup which asks for the users' password to unlock his ssh-key* 
+*! There is a issue with path management for Windows, so it won't work on a machine using Windows style paths (sorry, I did not care about that yet)*
+
+First make sure you have your [ssh access-key for github](https://help.github.com/en/articles/connecting-to-github-with-ssh) usable in your shell. I personally add it using the [ssh-agent](https://www.ssh.com/ssh/agent) right before I call the wizard.
 
 ``` sh
 $ thingycreate <thingyType> <thingyName> <basePath>
@@ -60,7 +66,7 @@ Current Functionality
 - parameter `thingyName`: the name of the base repository
 - parameter `thingyType`: (Website, App, Service, Machine) - determines structure of thingy
 - parameter 'basePath': the path where all repositories are created. Result on success will be one repository with it's submodules, all set up with their remote on github. At `basePath`/`thingyName`. `basePath` can be relative or absolute. If omitted then cwd will be the `basePath`.
-- Github Login (Will ask for your username and password, also handles 2fa)
+- Github Login (Will ask for your username and password, also handles 2fa) - really use username not the email-address!
 - Preemptivly checks if the necessary repositories or directories may be created in their respective locations.
 - Toolset Usage: The most important part of a thingy is it's toolset. We can use any toolset as toolset. We should have the relevant peparationScripts ready (prepareThingyForWebsite.pl, prepareThingyForApp.pl, prepareThingyForService.pl, prepareThingyForMachine.pl)
 - Source Usage: The source-code of the particular thingy the other more important part for our thingy. Here we can choose to copy from any of our own boilercode sources we might have ready for a particular thingy. Or we might even directly use another source without copying.

@@ -178,7 +178,8 @@ const getAcceptableThingyName = async () => {
         var status = new Spinner('Checking thingy name "' + thingy.getName() + '"...');
         try {
             status.start()
-            var repoNames = thingy.getRepos()            
+            
+            var repoNames = thingy.getRepos()  
             await pathHandler.checkCreatability(repoNames)
 
             let promises = repoNames.map( 
@@ -205,6 +206,7 @@ module.exports = {
 
         useArguments(arg1, arg2)
         await pathHandler.tryUse(path)
+        await pathHandler.checkForToolsetAndSources()
         await github.buildConnection()
 
         var answer = await inquirer.prompt(askThingyType)

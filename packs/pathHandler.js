@@ -109,6 +109,24 @@ module.exports = {
 
     },
 
+    checkForToolsetAndSources: async () => {
+
+        var sourcesPath = pathModule.resolve(currentBasePath, "sources")
+        var toolsetPath = pathModule.resolve(currentBasePath, "toolset")
+
+        var exists = await checkDirectoryExists(sourcesPath)
+        if(exists) {
+            console.log(c.red("Error: A directory named sources does already exist in the basePath(" + currentBasePath + ")!\nPlease remove this directory or choose a different basePath(" + currentBasePath + ")!\n And now we die!\n"))
+            process.exit(-12)
+        }
+
+        exists = await checkDirectoryExists(toolsetPath)
+        if(exists) {
+            console.log(c.red("Error: A directory named toolset does already exist in the basePath(" + currentBasePath + ")!\nPlease remove this directory or choose a different basePath(" + currentBasePath + ")!\n And now we die!\n"))
+            process.exit(-13)        }
+
+    },
+
     getBasePath: () => {
         return currentBasePath
     },

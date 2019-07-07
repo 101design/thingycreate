@@ -113,7 +113,7 @@ class RepositoryNode {
 
         console.log(c.yellow("Initializing " + this.name))
         const base = pathHandler.getBasePath()
-        const gitPaths = pathHandler.getGitPaths(this.repo)
+        const gitPaths = pathHandler.getGitPaths(this.name)
         const gitDir = gitPaths.gitDir
         const repoDir = gitPaths.repoDir
         console.log(c.yellow("basePath " + base))
@@ -121,7 +121,7 @@ class RepositoryNode {
         console.log(c.yellow("gitDir " + gitDir))
 
         if(this.toBeCopied) {            
-            await git(base).clone(this.sourceRemote.getSSH())
+            await git(base).clone(this.sourceRemote.getSSH(), this.name)
             await fs.remove(gitDir)
         } else {
             await fs.mkdirs(repoDir)

@@ -217,8 +217,8 @@ module.exports = {
         
 
 
-        // const output = await utl.execScriptPromise(scriptPath, options)
-        // console.log(c.green(output))
+        const output = await utl.execScriptPromise(scriptPath, options)
+        console.log(c.green(output))
     },
     createRepositoryTree: () => {
         if(name) {

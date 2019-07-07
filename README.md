@@ -23,8 +23,6 @@ $ npm install -g thingycreate
 Usage
 -----
 
-*! There is a issue with path management for Windows, so it won't work on a machine using Windows style paths (sorry, I did not care about that yet)*
-
 First make sure you have your [ssh access-key for github](https://help.github.com/en/articles/connecting-to-github-with-ssh) usable in your shell. I personally add it using the [ssh-agent](https://www.ssh.com/ssh/agent) right before I call the wizard.
 
 ``` sh

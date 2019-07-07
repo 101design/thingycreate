@@ -212,11 +212,12 @@ module.exports = {
             cwd: pathHandler.getToolsetPath()
         }
 
-        console.log(c.yellow("preparationScriptPath: " + scriptPath))
-        console.log(c.yellow("exec options: " + JSON.stringify(options, null, 2)))
+        // console.log(c.yellow("preparationScriptPath: " + scriptPath))
+        // console.log(c.yellow("exec options: " + JSON.stringify(options, null, 2)))
         
 
 
+        console.log(c.green("Running " + scriptPath))
         const output = await utl.execScriptPromise(scriptPath, options)
         console.log(c.green(output))
     },

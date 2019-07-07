@@ -73,7 +73,7 @@ module.exports = {
             currentBasePath = process.cwd()
         }
 
-        console.log(c.yellow("using path: " + currentBasePath))
+        // console.log(c.yellow("using path: " + currentBasePath))
         //check if path is in git repository
         
         //check if path exists

@@ -111,14 +111,14 @@ class RepositoryNode {
             await this.submodules[i].initialize()            
         }
 
-        console.log(c.yellow("Initializing " + this.name))
         const base = pathHandler.getBasePath()
         const gitPaths = pathHandler.getGitPaths(this.name)
         const gitDir = gitPaths.gitDir
         const repoDir = gitPaths.repoDir
-        console.log(c.yellow("basePath " + base))
-        console.log(c.yellow("repoDir " + repoDir))
-        console.log(c.yellow("gitDir " + gitDir))
+        // console.log(c.yellow("Initializing " + this.name))
+        // console.log(c.yellow("basePath " + base))
+        // console.log(c.yellow("repoDir " + repoDir))
+        // console.log(c.yellow("gitDir " + gitDir))
 
         if(this.toBeCopied) {            
             await git(base).clone(this.sourceRemote.getSSH(), this.name)
@@ -138,8 +138,8 @@ class RepositoryNode {
 
         const source = pathHandler.getLicenseSourcePaths() 
         const dest = pathHandler.getLicenseDestinationPaths(repoDir)
-        console.log(c.yellow("copying " + source.unlicensePath + " to " + dest.unlicensePath))
-        console.log(c.yellow("copying " + source.licensePath + " to " + dest.licensePath))
+        // console.log(c.yellow("copying " + source.unlicensePath + " to " + dest.unlicensePath))
+        // console.log(c.yellow("copying " + source.licensePath + " to " + dest.licensePath))
         await fs.copy(source.licensePath, dest.licensePath)
         await fs.copy(source.unlicensePath, dest.unlicensePath)
 

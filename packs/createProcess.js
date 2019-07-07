@@ -9,7 +9,7 @@ const githubRemoteHandler = require("./githubRemoteHandler")
 const repositoryTreeHandler = require("./repositoryTreeHandler")
 const thingy = require("./thingy")
 const utl = require("./util")
-const pathChecker = require("./creationPathChecker")
+const pathHandler = require("./pathHandler")
 
 //Relevant Variables for this scope
 const defaultToolsetRemote = githubRemoteHandler.createRemoteFromURL(cfg.public.defaultToolsetURL)
@@ -179,7 +179,7 @@ const getAcceptableThingyName = async () => {
         try {
             status.start()
             var repoNames = thingy.getRepos()            
-            await pathChecker.checkCreatability(repoNames)
+            await pathHandler.checkCreatability(repoNames)
 
             let promises = repoNames.map( 
                 repo => github.assertUserHasNotThatRepo(repo)
@@ -204,7 +204,7 @@ module.exports = {
     execute: async (arg1, arg2, path) => {
 
         useArguments(arg1, arg2)
-        await pathChecker.checkPath(path)
+        await pathHandler.tryUse(path)
         await github.buildConnection()
 
         var answer = await inquirer.prompt(askThingyType)
@@ -217,8 +217,8 @@ module.exports = {
         await getToolsetRepo()
         await getSourceRepo()
         
-        const thingyPath = await repositoryTreeHandler.initializeRepositories(path)
-        await thingy.prepare(thingyPath)
+        await repositoryTreeHandler.initializeRepositories()
+        await thingy.prepare()
         
         // await repositoryTreeHandler.cleanGithub()
         return true

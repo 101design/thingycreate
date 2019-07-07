@@ -4,6 +4,7 @@ const c           = require('chalk');
 const CLI         = require('clui');
 const Spinner     = CLI.Spinner;
 const fs          = require("fs").promises
+const pathModule  = require("path")
 
 const utl = require("./util")
 
@@ -34,7 +35,9 @@ const authQuestions = [
 
     }
 ]
-var currentPath = ""
+
+var currentBasePath = ""
+var thingyPath = ""
 
 const checkDirectoryExists = async (path) => {
     try{
@@ -58,30 +61,30 @@ const checkDirectoryIsInGit = async (path) => {
 } 
 
 module.exports = {
-    checkPath: async (path) => {
+    tryUse: async (providedPath) => {
         
-        if(path) {
-            if(path.charAt(0) == "/") {
-                currentPath = path
+        if(providedPath) {
+            if(pathModule.isAbsolute(providedPath)) {
+                currentBasePath = providedPath
             } else {
-                currentPath = process.cwd() + "/" + path
+                currentBasePath = pathModule.resolve(process.cwd(), providedPath)
             }
         } else {
-            currentPath = process.cwd()
+            currentBasePath = process.cwd()
         }
 
-        // console.log(c.yellow("using path: " + currentPath))
+        console.log(c.yellow("using path: " + currentBasePath))
         //check if path is in git repository
         
         //check if path exists
-        var exists = await checkDirectoryExists(currentPath)
+        var exists = await checkDirectoryExists(currentBasePath)
         // console.log(c.yellow("directory exists: " + exists))
 
         if(!exists) {
             throw new Error("Provided directory does not exist!")
         }
 
-        var isInGit = await checkDirectoryIsInGit(currentPath)
+        var isInGit = await checkDirectoryIsInGit(currentBasePath)
         // console.log(c.yellow("Directory is in git: " + isInGit))
         if(isInGit) {
             throw new Error("Provided directory is already in a git subtree!")
@@ -91,7 +94,7 @@ module.exports = {
 
     checkCreatability: async (directoryNames) => {
         // console.log(directoryNames)
-        var paths = directoryNames.map(dir => currentPath + "/" + dir)
+        var paths = directoryNames.map(dir => pathModule.resolve(currentBasePath, dir))
         // console.log(paths)
         
         var promises = paths.map(path => checkDirectoryExists(path))
@@ -104,5 +107,46 @@ module.exports = {
                 throw "At least one directory is not creatable for thingyname!"
         })
 
+    },
+
+    getBasePath: () => {
+        return currentBasePath
+    },
+    
+    getGitPaths: (name) => {
+        var r = {}
+        r.repoDir = pathModule.resolve(currentBasePath, name)
+        r.gitDir = pathModule.resolve(r.repoDir, ".git")
+        return r
+    },  
+
+    getLicenseSourcePaths: () => {
+        var r =  {}
+        r.licensePath = pathModule.resolve(__dirname, "../LICENSE")
+        r.unlicensePath = pathModule.resolve(__dirname, "../UNLICENSE")
+        return r
+    },
+    getLicenseDestinationPaths: (repoDir) => {
+        var r =  {}
+        r.licensePath = pathModule.resolve(repoDir, "LICENSE")
+        r.unlicensePath = pathModule.resolve(repoDir, "UNLICENSE")
+        return r
+    },
+
+    setThingyPath: (path) => {
+        thingyPath = path
+    },
+
+    getThingyPath: () => {
+        return thingyPath
+    },
+
+    getToolsetPath: ()  => {
+        return pathModule.resolve(thingyPath, "toolset")
+    },
+    
+    getPreparationScriptPath: (scriptFileName) => {
+        return pathModule.resolve(thingyPath, "toolset", scriptFileName)
     }
+ 
 } 

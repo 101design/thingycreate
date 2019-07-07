@@ -6,6 +6,7 @@ const fs = require("fs-extra")
 
 const githubRemoteHandler = require("./githubRemoteHandler")
 const github = require("./githubHandler")
+const pathHandler = require("./pathHandler")
 const cfg = require("../config")
 const utl = require("./util")
 
@@ -22,9 +23,6 @@ class RepositoryNode {
     constructor(constructorObject) {
         Object.assign(this, constructorObject)
         
-        if(!this.name)
-            this.name = this.repo
-
         if(!this.remote) {
             if(this.owner &&  this.repo)
                 this.remote = githubRemoteHandler.createRemote(this.owner, this.repo)
@@ -54,6 +52,12 @@ class RepositoryNode {
         if((!this.remote) && (!this.repo || !this.owner)) {
             this.repositoryType = "NoRepository"
         }
+
+        if(!this.name)
+            this.name = this.repo
+
+        if(!this.name)
+            throw new Error("Bug!! There is no name for the directory of the repository!")
 
         this.submodules = []
         // console.log(c.green("\nAfter Constructor Ran:"))
@@ -98,23 +102,26 @@ class RepositoryNode {
         return repos
     }
 
-    async initialize(path) {
+    async initialize() {
 
         if(this.initialized)
             return
 
         for (var i = 0; i < this.submodules.length; i++) {
-            await this.submodules[i].initialize(path)            
+            await this.submodules[i].initialize()            
         }
 
-        // console.log(c.yellow("Initializing " + this.name))
-
-        var result = ""
-        var repoDir = path + "/" + this.name
-        var gitDir = repoDir + "/.git"
+        console.log(c.yellow("Initializing " + this.name))
+        const base = pathHandler.getBasePath()
+        const gitPaths = pathHandler.getGitPaths(this.name)
+        const gitDir = gitPaths.gitDir
+        const repoDir = gitPaths.repoDir
+        console.log(c.yellow("basePath " + base))
+        console.log(c.yellow("repoDir " + repoDir))
+        console.log(c.yellow("gitDir " + gitDir))
 
         if(this.toBeCopied) {            
-            await git(path).clone(this.sourceRemote.getSSH(), this.name)
+            await git(base).clone(this.sourceRemote.getSSH(), this.name)
             await fs.remove(gitDir)
         } else {
             await fs.mkdirs(repoDir)
@@ -129,9 +136,12 @@ class RepositoryNode {
             await git(repoDir).submoduleAdd(remote, name)            
         }
 
-        var licensePath = __dirname + "/../UNLICENSE"
-        var destination = repoDir + "/UNLICENSE"
-        await fs.copy(licensePath, destination)
+        const source = pathHandler.getLicenseSourcePaths() 
+        const dest = pathHandler.getLicenseDestinationPaths(repoDir)
+        console.log(c.yellow("copying " + source.unlicensePath + " to " + dest.unlicensePath))
+        console.log(c.yellow("copying " + source.licensePath + " to " + dest.licensePath))
+        await fs.copy(source.licensePath, dest.licensePath)
+        await fs.copy(source.unlicensePath, dest.unlicensePath)
 
         await git(repoDir).add(".")
         result = await git(repoDir).commit("initial commit")
@@ -139,10 +149,12 @@ class RepositoryNode {
         // throw "Death on purpose!"
         await git(repoDir).push("origin", "master")
 
-        if(!this.isRoot)
+        if(!this.isRoot) {
             await fs.remove(repoDir)
+        } else {
+            pathHandler.setThingyPath(repoDir)
+        }
 
-        return repoDir
     }
 }
 
@@ -292,7 +304,7 @@ module.exports = {
         return new RepositoryNode(constructorObject)
     },
 
-    initializeRepositories: async (path) => {
+    initializeRepositories: async () => {
         // printRepositoryTree()
         var status = new Spinner("Initializing all repositories...")
         try {
@@ -301,9 +313,8 @@ module.exports = {
             // console.log(reposToCreate)
             await createRepos(reposToCreate)
             
-            const thingyPath = await rootNode.initialize(path)
+            await rootNode.initialize()
             console.log(c.green("initialized!"))
-            return thingyPath
         } finally {
             status.stop()
         }

@@ -1,6 +1,7 @@
 const c = require("chalk")
 
 const repositoryTreeHandler = require("./repositoryTreeHandler")
+const pathHandler = require("./pathHandler")
 const utl = require("./util")
 
 // - - - - -  - - - - - -  - - - - --- - - - - - - - - - - - - - - - -  
@@ -204,20 +205,19 @@ module.exports = {
     getRepos: () => {
         return allRepos
     },
-    prepare: async(path) => {
-        // console.log(c.yellow("TODO: prepareThingy for " + type))
-        // console.log(c.yellow("At Path: " + path))
-        const preparationScript = getPreparationScript()
-        const toolsetPath = path + "/toolset"
-        const preparationScriptPath = toolsetPath + "/" + preparationScript
-        // console.log(c.yellow("So should call preparation script: " + preparationScript))
-        // console.log(c.yellow("At: " + preparationScriptPath))
-        
+    prepare: async() => {
+        const scriptFileName = getPreparationScript()
+        const scriptPath = pathHandler.getPreparationScriptPath(scriptFileName)         
         const options = {
-            cwd: toolsetPath
+            cwd: pathHandler.getToolsetPath()
         }
 
-        const output = await utl.execScriptPromise(preparationScriptPath, options)
+        console.log(c.yellow("preparationScriptPath: " + scriptPath))
+        console.log(c.yellow("exec options: " + JSON.stringify(options, null, 2)))
+        
+
+
+        // const output = await utl.execScriptPromise(scriptPath, options)
         // console.log(c.green(output))
     },
     createRepositoryTree: () => {

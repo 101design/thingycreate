@@ -1,5 +1,27 @@
 # thingycreaty - commandline wizard to create a thingy (App, Website, Service, Machine)
 
+# Why?
+I have experienced various unnecessary hassles when both developing on projects and a build system simultaneously.
+
+- Updates on the build system must be copied to all other projects. 
+- Source code sharing also required manual copying. Especially when developing on the same code but in different projects.
+
+Other hassles were the context switches and setup time for setting up the required git repositores.
+
+Also there is a vision about an extensive gitOps-network for all services and frontends. Where this will come in handy.
+
+# What?
+Thingycreate, originally thought as projectcreate, is a small project setup helper for many possible projects which inherently require the same repository strucure use, git submodules and a shared build system, which also is being worked on simultanously.
+
+It became a "thingy" instead "project" because the concept of a project is inherently flawed by it's definition. It is defined as a temporary endeavor with a beginning and an end. The limits set for a project are quite important for it. So no reasonable software project can really be a project actually because there is no scope for surely acceptable limitations.
+
+Instead of looking at a single software project as a project, thus alienating and effectivly cripple it by putting illusionary limitations on it. We should look at the whole software evolution as an ongoing organic process, where what it is what we develop is only an essentially very connected part of the whole.
+
+Where the word "component" would make sense, it may be are created and evolves, becomes optimized then most probably becomes deprecated at some point. Without any predicability on how the whole process will evolve and what are reasonable limitations for one of the components is.
+
+As the word "component" is already used in many contextes and has a load of conflicting associations. I simply defaulted to it being a thing. Then to thingy because it sounded better :D
+
+# How?
 Requirements
 ------------
 * [GitHub account](https://github.com/)
@@ -37,7 +59,7 @@ Then the wizard will ask you for what he needs to know ;-)
 Example
 -----
 ``` sh
-$ thingycreate website my-new-website /home/imthauser/thingies
+$ thingycreate website the-new-website /home/imthauser/thingies
   _     _       _                                                        _          
  | |_  | |__   (_)  _ __     __ _   _   _    ___   _ __    ___    __ _  | |_    ___ 
  | __| | '_ \  | | | '_ \   / _` | | | | |  / __| | '__|  / _ \  / _` | | __|  / _ \
@@ -46,16 +68,20 @@ $ thingycreate website my-new-website /home/imthauser/thingies
                             |___/   |___/                                           
 ? Github username: JhonnyJason
 ? Github password: [hidden]
-  ◟ Checking credentials...Credentials Check succeeded!
-  ◞ Checking thingy name "asdf"...All relevant repositories for asdf may be created :-)
+  ◡ Checking credentials...Credentials Check succeeded!
+  ◞ Checking thingy name "the-new-website"... acceptable!
+All relevant repositories for the-new-website may be created :-)
+  ◟ Checking if https://github.com/JhonnyJason/root-template.git is reachable...Reachable!
+? 'the-new-website' - repository...  How shall it be initialized? copy https://github.com/JhonnyJason/root-template.git
   ◝ Checking if https://github.com/JhonnyJason/toolset.git is reachable...Reachable!
-? Use default toolset? (https://github.com/JhonnyJason/toolset.git) Yes
-  ◜ Checking if https://github.com/JhonnyJason/sample-source.git is reachable...Reachable!
-? Copy from the default sources repository? (https://github.com/JhonnyJason/sample-source.g
-it) Yes
-  ◡ Creating all repositories...created!
+? 'the-new-website-toolset' - repository...  How shall it be initialized? use https://github.com/JhonnyJason/toolset.git
+  ◞ Checking if https://github.com/JhonnyJason/sample-source.git is reachable...Reachable!
+? 'the-new-website-sources' - repository...  How shall it be initialized? copy https://github.com/JhonnyJason/sample-source.git
+? 'the-new-website-testing' - repository...  How shall it be initialized? create new
+  ◞ Creating all repositories...created!
   ◝ Initializing all repositories...initialized!
 All done!
+
 
 ```
 Current Functionality
@@ -68,39 +94,115 @@ Current Functionality
 - Preemptivly checks if the necessary repositories or directories may be created in their respective locations.
 - Toolset Usage: The most important part of a thingy is it's toolset. We can use any toolset as toolset. We should have the relevant peparationScripts ready (prepareThingyForWebsite.pl, prepareThingyForApp.pl, prepareThingyForService.pl, prepareThingyForMachine.pl)
 - Source Usage: The source-code of the particular thingy the other more important part for our thingy. Here we can choose to copy from any of our own boilercode sources we might have ready for a particular thingy. Or we might even directly use another source without copying.
+- The thingies Object in the public config determines the structure of a thingy and the possible behaviour if we want to use a other repository, copy a other repository or creae a new one.
 
 ---
 
 # The Guts of thingycreate
 ## Configuration
-Defaults reside in 2 parts a `secretConfig.json` and a `publicConfig.json`. The default remote URL for the base template of the thingy, the default toolset and the default source to be copied from ar all to be defined in the `publicConfig.json`
+Only config needed is the `publicConfig.json`. It defines the name of the tool. Also defines all the thingies.
+
+Here is an example of how a thingy is defined:
+```javascript
+"website": {
+    "templateURL": "https://github.com/JhonnyJason/root-template.git",
+    "defaultBehaviour": "copy",
+    "negotiableBehaviours": ["create"],
+    "name": "",
+    "postfix": "",
+    "repo": "",
+    "submodules": [
+        {
+            "templateURL": "https://github.com/JhonnyJason/toolset.git",
+            "defaultBehaviour": "use",
+            "negotiableBehaviours": ["copy"],
+            "name": "toolset",
+            "repo": "",
+            "postfix": "-toolset",
+            "submodules": []
+        },
+        {
+            "templateURL": "https://github.com/JhonnyJason/sample-source.git",
+            "defaultBehaviour": "copy",
+            "negotiableBehaviours": ["create", "use"],
+            "name": "sources",
+            "repo": "",
+            "postfix": "-sources",
+            "submodules": []
+        },
+        {
+            "templateURL": "",
+            "defaultBehaviour": "create",
+            "negotiableBehaviours": [],
+            "name": "output",
+            "repo": "",
+            "postfix": "-deploy",
+            "submodules": []
+        },
+        {
+            "templateURL": "",
+            "defaultBehaviour": "create",
+            "negotiableBehaviours": ["use", "copy"],
+            "name": "testing",
+            "repo": "",
+            "postfix": "-testing",
+            "submodules": []
+
+        }
+    ]
+}
+```
+
 
 ## createProcess
 Responsible for the base level creation process, the code speaks for itself (hopefully^^):
 ```javascript
-    useArguments(arg1, arg2)
-    await pathChecker.checkPath(path)
-    await github.buildConnection()
+thingy.digestConfig(cfg.public.thingies)
+useArguments(arg1, arg2)
 
-    var answer = await inquirer.prompt(askThingyType)
-    if(typeof answer.thingyType == "string" && answer.thingyType)
-        thingy.setType(answer.thingyType)
-    
-    await getAcceptableThingyName()
-    thingy.createRepositoryTree()
-    
-    await getToolsetRepo()
-    await getSourceRepo()
-    
-    const thingyPath = await repositoryTreeHandler.initializeRepositories(path)
-    await thingy.prepare(thingyPath)
+await pathHandler.tryUse(path)
+
+await github.buildConnection()
+
+await thingy.doUserInquiry()
+
+thingy.createRepositoryTree()
+
+await repositoryTreeHandler.initializeRepositories()
+await thingy.prepare()
 ```
 
-## creationPathChecker
-Responsible to check if the `basePath` exists and is not within a git Repository already. Also checks if the directories to be created for Repository initialization don't already exist in the `basePath`.
+## pathHandler
+Responsible to check if the `basePath` exists and is not within a git Repository already. 
+Also checks the creatability for the directory which should be createdf for the thingy.
+
+It also provides the relevant paths for the repositoryTreeHandler to clone copy and generally initialize the repository tree.
+
+Interface:
+```javascript
+{
+    tryUse: async (providedPath) => {...}
+
+    checkCreatability: async (directoryName) => {...}
+
+    createInitializationBase: async (name) => {...}
+
+    cleanInitializationBase: async () => {...}
+
+    getBasePath: () => {...}
+    
+    getGitPaths: (name) => {...}
+
+    getLicenseSourcePaths: () => {...}
+
+    getLicenseDestinationPaths: (repoDir) => {...}
+}
+```
 
 ## githubHandler
 Responsible to speak to github. uses `@oktocit/rest` package. Exposes some useful functions:
+
+Interface:
 ```javascript
 {
     user: () => {...},
@@ -121,24 +223,105 @@ Responsible to speak to github. uses `@oktocit/rest` package. Exposes some usefu
 ## githubRemoteHandler
 Produces `githubRemoteObject` from url or given owner,repo pair. The `githubRemoteObject` is the representation of a remote, may be asked for specific url representation and checked for reachability.
 
+Interface:
+```javascript
+{
+    createOwnRemote: (repoName) => {...},
+
+    createRemoteFromURL: (url) => {...},
+
+    createRemote: (ownerOrURL, repoName) => {...}
+}
+```
+The `githubRemoteObject`:
+```javascript
+class githubRemoteObject {
+    constructor(owner, repoName) {...}
+
+    async checkReachability() {...}
+
+    getOwner() {...}
+
+    getRepo() {...}
+
+    getHTTPS() {...}
+
+    getSSH() {...}
+
+    isReachable() {...}
+}
+```
+
 ## repositoryTreeHandler
 Holds a tree-style representation of the repositories with their subrepositories.
 Also handles the information about if they shall be created, copied or just used.
 
 Finally has the capability to recursivly create and initialize all the thingy.
 
+Interface:
+```javascript
+{
+    createRootRepository: (rootNode) => {...},
+
+    getRootRepository: () => {...},
+
+    createRepositoryNode: (node) => {...},
+
+    initializeRepositories: async () => {...}
+
+}
+```
+
 ## thingy
 Responsible for all thingy-relevant information. E.g. the specific structure of the thingy and the valid type. When creating your own thingy, this is probably the right place to start;-)
 
 Finally has the capability to call the relevant preparation script in the toolset. Or Fails throwing an Error, the relevant preparation script is not present.
 
+Interface:
+```javascript
+{
+    digestConfig: (thingies) => {...},
+
+    setType: (type) {...},
+
+    setName: (name) {...},
+
+    getType: () => {...},
+
+    getName: () => {...},
+
+    hasName: () => {...},
+
+    getRepos: () => {...},
+
+    doUserInquiry: async () => {...},
+
+    prepare: async() => {...},
+
+    createRepositoryTree: () => {...}
+}
+```
+
+## thingyInquirer
+Manages the questions to ask the user. Specificly used by the thingy to retrieve the relevant info about how to build the repository tree.
+
+Interface:
+```javascript
+{
+    inquireThingyType: async (allTypes) => {...}, 
+
+    inquireThingyName: async () => {...},
+
+    inquireRepositoryTreatment: async (node) => {...} 
+}
+```
+
+
 # Further steps
 This Wizard will be furtherly generalized and extended, mainly to fit my own needs.
 Ideas of what could come next:
-- create a thingy type for commandline tools
-- have an own default sources repository for each `thingyType` 
 - more convenient argument handling
-- restructure thingy.js for nicer ways of adding a new `thingyType` 
+- clean out some code
 - use various non-github remotes
 - create repositories on not-github systems
 

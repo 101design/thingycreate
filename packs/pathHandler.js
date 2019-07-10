@@ -3,7 +3,7 @@ const git         = require("simple-git")
 const c           = require('chalk');
 const CLI         = require('clui');
 const Spinner     = CLI.Spinner;
-const fs          = require("fs").promises
+const fs          = require("fs-extra")
 const pathModule  = require("path")
 
 const utl = require("./util")
@@ -36,6 +36,7 @@ const authQuestions = [
     }
 ]
 
+var thingyName = ""
 var currentBasePath = ""
 var thingyPath = ""
 
@@ -92,41 +93,26 @@ module.exports = {
 
     },
 
-    checkCreatability: async (directoryNames) => {
-        // console.log(directoryNames)
-        var paths = directoryNames.map(dir => pathModule.resolve(currentBasePath, dir))
-        // console.log(paths)
-        
-        var promises = paths.map(path => checkDirectoryExists(path))
-        var results = await Promise.all(promises)
-
-        // console.log(results)
-
-        results.forEach(exists => {
-            if(exists)
-                throw "At least one directory is not creatable for thingyname!"
-        })
+    checkCreatability: async (directoryName) => {
+        var directoryPath = pathModule.resolve(currentBasePath, directoryName)
+        var exists = await checkDirectoryExists(directoryPath)
+        if(exists) {
+            throw "The directory at " + directoryPath + " already exists!"
+        } 
 
     },
-
-    checkForToolsetAndSources: async () => {
-
-        var sourcesPath = pathModule.resolve(currentBasePath, "sources")
-        var toolsetPath = pathModule.resolve(currentBasePath, "toolset")
-
-        var exists = await checkDirectoryExists(sourcesPath)
-        if(exists) {
-            console.log(c.red("Error: A directory named sources does already exist in the basePath(" + currentBasePath + ")!\nPlease remove this directory or choose a different basePath(" + currentBasePath + ")!\n And now we die!\n"))
-            process.exit(-12)
-        }
-
-        exists = await checkDirectoryExists(toolsetPath)
-        if(exists) {
-            console.log(c.red("Error: A directory named toolset does already exist in the basePath(" + currentBasePath + ")!\nPlease remove this directory or choose a different basePath(" + currentBasePath + ")!\n And now we die!\n"))
-            process.exit(-13)        }
-
+    createInitializationBase: async (name) => {
+        thingyName = name
+        thingyPath = pathModule.resolve(currentBasePath, thingyName)
+        currentBasePath = pathModule.resolve(currentBasePath, name + "-init")
+        await fs.mkdirs(currentBasePath)
     },
-
+    cleanInitializationBase: async () => {
+        var initializedThingyPath = pathModule.resolve(currentBasePath, thingyName)
+        await fs.move(initializedThingyPath, thingyPath)
+        await fs.remove(currentBasePath)
+        currentBasePath = pathModule.resolve(currentBasePath, "..")
+    },
     getBasePath: () => {
         return currentBasePath
     },

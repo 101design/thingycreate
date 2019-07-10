@@ -1,6 +1,249 @@
 {
     "name": "thingycreate",
-    "baseTemplateURL": "https://github.com/JhonnyJason/root-template.git",
-    "defaultToolsetURL": "https://github.com/JhonnyJason/toolset.git",
-    "defaultSourceURL": "https://github.com/JhonnyJason/sample-source.git"
+    "thingies": {
+        "website": {
+            "templateURL": "https://github.com/JhonnyJason/root-template.git",
+            "defaultBehaviour": "copy",
+            "negotiableBehaviours": ["create"],
+            "name": "",
+            "postfix": "",
+            "repo": "",
+            "submodules": [
+                {
+                    "templateURL": "https://github.com/JhonnyJason/toolset.git",
+                    "defaultBehaviour": "use",
+                    "negotiableBehaviours": ["copy"],
+                    "name": "toolset",
+                    "repo": "",
+                    "postfix": "-toolset",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "https://github.com/JhonnyJason/sample-source.git",
+                    "defaultBehaviour": "copy",
+                    "negotiableBehaviours": ["create", "use"],
+                    "name": "sources",
+                    "repo": "",
+                    "postfix": "-sources",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": [],
+                    "name": "output",
+                    "repo": "",
+                    "postfix": "-deploy",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": ["use", "copy"],
+                    "name": "testing",
+                    "repo": "",
+                    "postfix": "-testing",
+                    "submodules": []
+        
+                }
+            ]
+        },
+        "app": {
+            "templateURL": "https://github.com/JhonnyJason/root-template.git",
+            "defaultBehaviour": "copy",
+            "negotiableBehaviours": ["create"],
+            "name": "",
+            "postfix": "",
+            "repo": "",
+            "submodules": [
+                {
+                    "templateURL": "https://github.com/JhonnyJason/toolset.git",
+                    "defaultBehaviour": "use",
+                    "negotiableBehaviours": ["copy"],
+                    "name": "toolset",
+                    "repo": "",
+                    "postfix": "-toolset",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "https://github.com/JhonnyJason/sample-source.git",
+                    "defaultBehaviour": "copy",
+                    "negotiableBehaviours": ["create", "use"],
+                    "name": "sources",
+                    "repo": "",
+                    "postfix": "-sources",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": [],
+                    "name": "output",
+                    "repo": "",
+                    "postfix": "-output",
+                    "submodules": [
+                        {
+                            "templateURL": "",
+                            "defaultBehaviour": "create",
+                            "negotiableBehaviours": [],
+                            "name": "android-source",
+                            "repo": "",
+                            "postfix": "-android-source",
+                            "submodules": []       
+                        },
+                        {
+                            "templateURL": "",
+                            "defaultBehaviour": "create",
+                            "negotiableBehaviours": [],
+                            "name": "ios-source",
+                            "repo": "",
+                            "postfix": "-ios-source",
+                            "submodules": []       
+                        }
+                    ]
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": ["use", "copy"],
+                    "name": "testing",
+                    "repo": "",
+                    "postfix": "-testing",
+                    "submodules": []
+        
+                }
+            ]
+        },
+        "cli": {
+            "templateURL": "https://github.com/JhonnyJason/root-template.git",
+            "defaultBehaviour": "copy",
+            "negotiableBehaviours": ["create"],
+            "name": "",
+            "postfix": "",
+            "repo": "",
+            "submodules": [
+                {
+                    "templateURL": "https://github.com/JhonnyJason/toolset.git",
+                    "defaultBehaviour": "use",
+                    "negotiableBehaviours": ["copy"],
+                    "name": "toolset",
+                    "repo": "",
+                    "postfix": "-toolset",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "https://github.com/JhonnyJason/sample-source.git",
+                    "defaultBehaviour": "copy",
+                    "negotiableBehaviours": ["create", "use"],
+                    "name": "sources",
+                    "repo": "",
+                    "postfix": "-sources",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": [],
+                    "name": "output",
+                    "repo": "",
+                    "postfix": "-output",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": ["copy", "use"],
+                    "name": "testing",
+                    "repo": "",
+                    "postfix": "-testing",
+                    "submodules": []
+        
+                }
+            ]
+        },
+        "machine": {
+            "templateURL": "https://github.com/JhonnyJason/root-template.git",
+            "defaultBehaviour": "copy",
+            "negotiableBehaviours": ["create"],
+            "name": "",
+            "postfix": "",
+            "repo": "",
+            "submodules": [
+                {
+                    "templateURL": "https://github.com/JhonnyJason/toolset.git",
+                    "defaultBehaviour": "use",
+                    "negotiableBehaviours": ["copy"],
+                    "name": "toolset",
+                    "repo": "",
+                    "postfix": "-toolset",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "https://github.com/JhonnyJason/sample-source.git",
+                    "defaultBehaviour": "copy",
+                    "negotiableBehaviours": ["create", "use"],
+                    "name": "sources",
+                    "repo": "",
+                    "postfix": "-sources",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": [],
+                    "name": "config",
+                    "repo": "",
+                    "postfix": "-config",
+                    "submodules": []
+                }
+            ]
+        }, 
+        "service": {
+            "templateURL": "https://github.com/JhonnyJason/root-template.git",
+            "defaultBehaviour": "copy",
+            "negotiableBehaviours": ["create"],
+            "name": "",
+            "postfix": "",
+            "repo": "",
+            "submodules": [
+                {
+                    "templateURL": "https://github.com/JhonnyJason/toolset.git",
+                    "defaultBehaviour": "use",
+                    "negotiableBehaviours": ["copy"],
+                    "name": "toolset",
+                    "repo": "",
+                    "postfix": "-toolset",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "https://github.com/JhonnyJason/sample-source.git",
+                    "defaultBehaviour": "copy",
+                    "negotiableBehaviours": ["create", "use"],
+                    "name": "sources",
+                    "repo": "",
+                    "postfix": "-sources",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": [],
+                    "name": "output",
+                    "repo": "",
+                    "postfix": "-deploy",
+                    "submodules": []
+                },
+                {
+                    "templateURL": "",
+                    "defaultBehaviour": "create",
+                    "negotiableBehaviours": ["copy", "use"],
+                    "name": "testing",
+                    "repo": "",
+                    "postfix": "-testing",
+                    "submodules": []
+        
+                }
+            ]
+        }
+    }
 }

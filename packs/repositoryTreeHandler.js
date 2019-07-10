@@ -10,11 +10,8 @@ const pathHandler = require("./pathHandler")
 const cfg = require("../config")
 const utl = require("./util")
 
-const baseTemplateRemote = githubRemoteHandler.createRemoteFromURL(cfg.public.baseTemplateURL)
-const defaultToolsetRemote = githubRemoteHandler.createRemoteFromURL(cfg.public.defaultToolsetURL)
-const defaultSourceRemote = githubRemoteHandler.createRemoteFromURL(cfg.public.defaultSourceURL)
 
-var rootNode = null
+var treeRoot = null
 var sourcesRepoName = ""
 
 var createdRepos = []
@@ -30,7 +27,6 @@ class RepositoryNode {
             this.repo = this.remote.getRepo()
             this.owner = this.remote.getOwner()
         }
-
 
         if(this.sourceRemote) {        
             
@@ -107,6 +103,10 @@ class RepositoryNode {
         if(this.initialized)
             return
 
+        if(this.isRoot) {
+            await pathHandler.createInitializationBase(this.name)
+        }
+
         for (var i = 0; i < this.submodules.length; i++) {
             await this.submodules[i].initialize()            
         }
@@ -152,7 +152,7 @@ class RepositoryNode {
         if(!this.isRoot) {
             await fs.remove(repoDir)
         } else {
-            pathHandler.setThingyPath(repoDir)
+            await pathHandler.cleanInitializationBase()
         }
 
     }
@@ -160,7 +160,7 @@ class RepositoryNode {
 
 const printRepositoryTree = () => {
     console.log("\nRepository Tree:")
-    rootNode.printToConsole(">")
+    treeRoot.printToConsole(">")
 }
 
 const createRepos = async (repos) => {
@@ -196,111 +196,36 @@ const deleteCreatedRepos = async () => {
 
 module.exports = {
 
-    createRootRepository: (repo, sourcesRepo) => {
+    createRootRepository: (rootNode) => {
+        // console.log(JSON.stringify(rootNode, null, 4))
         const constructorObject = {
-            name: repo,
-            repo: repo,
+            repo: rootNode.repo,
             owner: github.user(),
-            sourceRemote: baseTemplateRemote,
+            sourceRemote: rootNode.sourceRemote,
             isRoot: true
         }
-        rootNode = new  RepositoryNode(constructorObject)
-        sourcesRepoName = sourcesRepo
+        treeRoot = new  RepositoryNode(constructorObject)
+        // sourcesRepoName = sourcesRepo
     },
 
     getRootRepository: () => {
-        return rootNode
+        return treeRoot
     },
 
-    evaluateToolsetAnswer: (answer) => {
-        // console.log(answer)
-        
-        if(!rootNode) {
-            throw new Error("Evaluating ToolsetAnswer but we have no rootRepository yet :-/")
-        }
-
-        var toolsetRemote = null
-
-        if(answer.useDefaultToolset) {
-            toolsetRemote = defaultToolsetRemote
-        } else {
-            if(utl.isFullURL(answer.toolsetRepo)) {
-                toolsetRemote = githubRemoteHandler.createRemoteFromURL(answer.toolsetRepo)
-            } else {
-                toolsetRemote = githubRemoteHandler.createOwnRemote(answer.toolsetRepo)
-            }
-        }
-
+    createRepositoryNode: (node) => {
         const constructorObject = {
-            name: "toolset",
-            initialized: true,
-            remote: toolsetRemote
+            name: node.name,
+            repo: node.repo
         }
-
-        const repoNode = new RepositoryNode(constructorObject)
-        rootNode.addSubrepository(repoNode)
-     
-    },
-
-    evaluateSourceAnswer: (answer) => {
-        // console.log(answer)
-
-        if(!rootNode) {
-            throw new Error("Evaluating ToolsetAnswer but we have no rootRepository yet :-/")
-        }
-
-        if((!answer.copyDefaultSource) && (!answer.useSpecificSource) && (!answer.copySpecificSource))
-            return
-
-        var repoNode = null
-
-        var constructorObject = {
-            name: "sources",
-            owner: github.user(),
-            repo: sourcesRepoName
-        }
-
-        if (answer.useSpecificSource) {
-        
-            if(utl.isFullURL(answer.specificSource)) {
-                constructorObject.remote = githubRemoteHandler.createRemoteFromURL(answer.specificSource)
-            } else {
-                constructorObject.remote = githubRemoteHandler.createOwnRemote(answer.specificSource)
-            }
-
-            constructorObject.owner = constructorObject.remote.getOwner()
-            constructorObject.repo = constructorObject.remote.getRepo()
+        if(node.initialized) {
+            constructorObject.remote = node.sourceRemote
             constructorObject.initialized = true
-
-            repoNode = new RepositoryNode(constructorObject)
-            rootNode.addSubrepository(repoNode)    
-        
-        } else if(answer.copyDefaultSource) {
-
-            constructorObject.sourceRemote = defaultSourceRemote
-            
-            repoNode = new RepositoryNode(constructorObject)
-            rootNode.addSubrepository(repoNode)            
-        
         } else {
+            constructorObject.owner = github.user()
+            constructorObject.sourceRemote = node.sourceRemote
 
-            if(utl.isFullURL(answer.specificSource)) {
-                constructorObject.sourceRemote = githubRemoteHandler.createRemoteFromURL(answer.specificSource)
-            } else {
-                constructorObject.sourceRemote = githubRemoteHandler.createOwnRemote(answer.specificSource)
-            }
-            
-            repoNode = new RepositoryNode(constructorObject)
-            rootNode.addSubrepository(repoNode)            
         }
-    
-    },
-
-    createOwnRepository: (repo) => {
-        const constructorObject = {
-            owner: github.user(),
-            repo: repo
-        }
+        
         return new RepositoryNode(constructorObject)
     },
 
@@ -309,11 +234,10 @@ module.exports = {
         var status = new Spinner("Initializing all repositories...")
         try {
             status.start()
-            const reposToCreate = rootNode.getReposToCreate()
+            const reposToCreate = treeRoot.getReposToCreate()
             // console.log(reposToCreate)
             await createRepos(reposToCreate)
-            
-            await rootNode.initialize()
+            await treeRoot.initialize()
             console.log(c.green("initialized!"))
         } finally {
             status.stop()
